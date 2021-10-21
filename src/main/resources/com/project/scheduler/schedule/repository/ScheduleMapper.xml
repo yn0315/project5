@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.project.scheduler.schedule.repository.ScheduleMapper">
+
+    <resultMap id="scheduleMap" type="com.project.scheduler.schedule.domain.Schedule">
+        <result property="scdNo" column="scd_no" />
+        <result property="scdTitle" column="scd_title" />
+        <result property="writerEmpNo" column="writer_emp_no" />
+        <result property="scdCode" column="scd_code" />
+        <result property="startDate" column="start_date" />
+        <result property="endDate" column="end_date" />
+
+    </resultMap>
+
+    <!-- 코드에 따른 일정 가져오기 -->
+    <select id="getScheduleList" resultMap="scheduleMap">
+        SELECT *
+        FROM schedule
+        WHERE
+            scd_code IN
+        <foreach collection="array" item="code"  open="(" close=")" separator=",">
+            #{code}
+        </foreach>
+    </select>
+
+    <!-- 일정 하나 가져오기 -->
+    <select id="getSchedule" resultMap="scheduleMap">
+        SELECT *
+        FROM schedule
+        WHERE scd_no = #{scdNo}
+    </select>
+
+    <!--스케줄 등록-->
+    <insert id="insertSchedule">
+        INSERT INTO schedule
+        (scd_no, scd_title, writer_emp_no, scd_code, start_date, end_date)
+        VALUES
+        (seq_scd.nextval, #{scdTitle}, #{writerEmpNo}, #{scdCode}, #{startDate}, #{endDate})
+    </insert>
+
+    <!--스케줄 삭제-->
+    <delete id="deleteSchedule">
+        DELETE FROM schedule
+        WHERE scd_no = #{scdNo}
+    </delete>
+
+    <!--스케줄 수정 작성자, 제목, 내용, 기간-->
+    <update id="modifySchedule">
+        UPDATE schedule SET
+        scd_title = #{scdTitle}, start_date = #{startDate}, end_date = #{endDate}
+        WHERE scd_no = #{scdNo}
+    </update>
+
+</mapper>
